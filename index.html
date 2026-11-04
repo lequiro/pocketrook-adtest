@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PocketRook: Learn Chess in 5 Minutes a Day</title>
+<meta name="description" content="PocketRook is a chess coach in your pocket: one 5-minute lesson a day. Demo page for ad testing.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#FAF7F2;
+  --surface:#FFFFFF;
+  --text:#1E1B16;
+  --muted:#5E584E;
+  --primary:#2F6B4F;
+  --primary-text:#FFFFFF;
+  --accent:#E0A526;
+  --accent-text:#1E1B16;
+  --border:#E4DDD0;
+  --input-border:#8C8576;
+  --focus:#1A57B8;
+  --danger:#A3261A;
+  --shadow:rgba(30,27,22,.16);
+  --font-head:"Fraunces",Georgia,"Times New Roman",serif;
+  --font-body:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#14171A;
+    --surface:#1D2227;
+    --text:#F2EFE8;
+    --muted:#A9A79F;
+    --primary:#5BC08F;
+    --primary-text:#0B1A12;
+    --accent:#F0BC4A;
+    --accent-text:#14171A;
+    --border:#2E353B;
+    --input-border:#6B747B;
+    --focus:#8AB4FF;
+    --danger:#FF8A7A;
+    --shadow:rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#14171A;
+  --surface:#1D2227;
+  --text:#F2EFE8;
+  --muted:#A9A79F;
+  --primary:#5BC08F;
+  --primary-text:#0B1A12;
+  --accent:#F0BC4A;
+  --accent-text:#14171A;
+  --border:#2E353B;
+  --input-border:#6B747B;
+  --focus:#8AB4FF;
+  --danger:#FF8A7A;
+  --shadow:rgba(0,0,0,.55);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (prefers-reduced-motion: no-preference){
+  html{scroll-behavior:smooth}
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:1.0625rem;
+  line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+  padding-top:0;
+  padding-bottom:calc(var(--console-h, 64px) + 32px);
+  overflow-wrap:break-word;
+}
+.wrap{max-width:960px;margin-inline:auto;min-width:0}
+h1,h2,h3{font-family:var(--font-head);line-height:1.15;margin:0 0 .5em;font-weight:700}
+h1{font-size:clamp(2rem,6.5vw,3.25rem);letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,4.5vw,2rem)}
+h3{font-size:1.2rem}
+p{margin:0 0 1em}
+a{color:var(--primary)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+
+.skip{position:absolute;left:-9999px;top:0;background:var(--primary);color:var(--primary-text);padding:12px 16px;z-index:100;border-radius:0 0 8px 8px}
+.skip:focus{left:16px}
+
+/* header */
+.site-header{padding-block:16px;display:flex;align-items:center;gap:10px}
+.brand{font-family:var(--font-head);font-weight:700;font-size:1.35rem;display:inline-flex;align-items:center;gap:8px;color:var(--text);text-decoration:none;min-height:44px}
+.brand .mark{color:var(--primary);font-size:1.6rem}
+
+section{padding-block:40px;scroll-margin-top:16px}
+.lede{color:var(--muted);font-size:1.15rem;max-width:34em}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:48px;min-width:44px;padding:12px 22px;
+  font:inherit;font-weight:700;text-decoration:none;cursor:pointer;
+  border-radius:12px;border:2px solid var(--primary);
+  line-height:1.2;text-align:center;
+}
+.btn-primary{background:var(--primary);color:var(--primary-text)}
+.btn-secondary{background:var(--surface);color:var(--primary)}
+.btn:hover{box-shadow:0 4px 12px var(--shadow)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+
+/* hero */
+.hero{display:flex;flex-wrap:wrap;gap:32px;align-items:center;padding-top:24px}
+.hero-copy{flex:1 1 320px;min-width:0}
+.hero-art{
+  flex:0 0 auto;width:168px;height:168px;border-radius:20px;
+  border:3px solid var(--accent);
+  background:conic-gradient(var(--border) 25%, var(--surface) 0 50%, var(--border) 0 75%, var(--surface) 0) 0 0/84px 84px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--primary);font-size:112px;line-height:1;
+  font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans","Apple Symbols",serif;
+}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:16px;padding:22px;min-width:0}
+.card p{color:var(--muted);margin:0}
+
+/* steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:step}
+.steps li{counter-increment:step;display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;font-weight:700;min-width:0}
+.steps li::before{
+  content:counter(step);flex:0 0 auto;width:40px;height:40px;border-radius:50%;
+  background:var(--primary);color:var(--primary-text);
+  display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-head);
+}
+
+/* offer */
+.offer{background:var(--surface);border:2px solid var(--primary);border-radius:20px;padding:28px;text-align:center}
+.offer .badge{display:inline-block;background:var(--accent);color:var(--accent-text);font-weight:700;font-size:.85rem;padding:4px 12px;border-radius:999px;margin-bottom:12px}
+.offer p.price{font-size:1.25rem;margin-bottom:0}
+.note{color:var(--muted);font-size:.9rem;margin:16px 0 0}
+
+/* form */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:560px}
+.field{margin-bottom:16px}
+label{display:block;font-weight:700;margin-bottom:6px}
+input[type="email"],select{
+  width:100%;min-height:48px;padding:10px 12px;font:inherit;
+  color:var(--text);background:var(--bg);
+  border:2px solid var(--input-border);border-radius:10px;
+}
+.form-msg{min-height:1.5em;margin:14px 0 0;font-weight:700;color:var(--primary)}
+.form-msg[data-state="error"]{color:var(--danger)}
+
+/* faq */
+details{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+summary{cursor:pointer;min-height:48px;padding:12px 18px;font-weight:700;display:flex;align-items:center}
+details p{padding:0 18px;margin:0 0 16px;color:var(--muted)}
+
+/* footer */
+.site-footer{border-top:1px solid var(--border);padding-block:24px 32px;color:var(--muted);font-size:.95rem;display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px}
+.site-footer p{margin:0;min-width:0}
+.site-footer nav{display:flex;align-items:center}
+.site-footer nav a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding-inline:8px}
+.site-footer .sep{color:var(--muted)}
+
+/* ad test console */
+.console{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:var(--surface);color:var(--text);
+  border-top:3px solid var(--primary);box-shadow:0 -4px 16px var(--shadow);
+  font-family:var(--font-mono);font-size:.85rem;line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+  padding-top:4px;
+  padding-bottom:calc(4px + env(safe-area-inset-bottom,0px));
+}
+.console-inner{max-width:960px;margin-inline:auto;min-width:0}
+.console-toggle{
+  width:100%;min-height:44px;padding:8px 0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;
+  background:var(--surface);color:var(--text);border:0;font:inherit;font-weight:700;cursor:pointer;text-align:left;
+}
+.console-toggle .chev{margin-left:auto;transition:transform .15s}
+.console-toggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
+@media (prefers-reduced-motion: reduce){
+  .console-toggle .chev{transition:none}
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+.chip[hidden]{display:none}
+.chip{display:inline-block;background:var(--accent);color:var(--accent-text);padding:1px 8px;border-radius:999px;font-size:.75rem}
+.count{color:var(--muted);font-weight:400}
+.console-body{max-height:calc(50vh - 56px);overflow:auto;padding:4px 2px 12px;overscroll-behavior:contain}
+.console-body[hidden]{display:none}
+.console h2{font-family:var(--font-mono);font-size:.9rem;margin:18px 0 6px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.console h2:first-child{margin-top:4px}
+.iframe-note{border:2px solid var(--accent);border-radius:8px;padding:8px 10px;font-weight:700;margin:0;overflow-wrap:anywhere}
+.iframe-note[data-embedded="true"]{background:var(--accent);color:var(--accent-text)}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th,td{text-align:left;vertical-align:top;padding:5px 8px;border-bottom:1px solid var(--border);overflow-wrap:anywhere;min-width:0}
+thead th{color:var(--muted);font-weight:700}
+tbody th{width:34%;font-weight:700}
+mark.utm{background:var(--accent);color:var(--accent-text);padding:0 4px;border-radius:4px}
+.log{border:1px solid var(--border);border-radius:8px;background:var(--bg);max-height:220px;overflow:auto;padding:4px 8px}
+.log-row{display:flex;flex-wrap:wrap;gap:2px 10px;padding:4px 0;border-bottom:1px solid var(--border)}
+.log-row:last-child{border-bottom:0}
+.log-row time{color:var(--muted)}
+.log-row .name{font-weight:700;color:var(--primary)}
+.log-row .details{flex:1 1 100%;min-width:0;overflow-wrap:anywhere;color:var(--muted)}
+.log-empty{color:var(--muted);margin:6px 0}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
+.cbtn{
+  min-height:44px;min-width:44px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer;
+  background:var(--bg);color:var(--text);border:2px solid var(--input-border);border-radius:8px;
+}
+.cbtn:hover{border-color:var(--primary)}
+.status{color:var(--primary);font-weight:700;min-height:1.4em}
+.builder{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px}
+.builder label{font-size:.8rem;margin-bottom:4px}
+.builder input,.out,textarea.fallback{
+  width:100%;min-height:44px;padding:8px 10px;font:inherit;
+  background:var(--bg);color:var(--text);border:2px solid var(--input-border);border-radius:8px;
+}
+.out{margin-top:10px}
+textarea.fallback{margin-top:10px;min-height:120px;resize:vertical}
+textarea.fallback[hidden]{display:none}
+</style>
+<script>
+window.dataLayer = window.dataLayer || [];
+</script>
+<!-- ===== AD PIXEL / TAG PLACEHOLDER: paste your ChatGPT Ads pixel or tag snippet below this line. Keep it inside <head>. ===== -->
+<!-- ===== END AD PIXEL / TAG PLACEHOLDER ===== -->
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="site-header">
+    <a class="brand" href="#main" aria-label="PocketRook home"><span class="mark" aria-hidden="true">&#9822;&#xFE0E;</span>PocketRook</a>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">Get better at chess in 5 minutes a day.</h1>
+        <p class="lede">PocketRook gives you one bite-sized lesson, one puzzle, and one tip every morning.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="#lead-form" data-cta="hero_primary">Start free trial</a>
+          <a class="btn btn-secondary" href="#how-it-works" data-cta="hero_secondary">See how it works</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">&#9822;&#xFE0E;</div>
+    </section>
+
+    <section aria-labelledby="benefits-title">
+      <h2 id="benefits-title">Why you'll like it</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Daily micro-lessons</h3>
+          <p>Learn one idea at a time, never overwhelmed.</p>
+        </article>
+        <article class="card">
+          <h3>Smart puzzles</h3>
+          <p>Puzzles adapt to the mistakes you actually make.</p>
+        </article>
+        <article class="card">
+          <h3>Track progress</h3>
+          <p>Watch your rating and streak climb week by week.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="how-it-works" aria-labelledby="how-title">
+      <h2 id="how-title">How it works</h2>
+      <ol class="steps">
+        <li>Tell us your level.</li>
+        <li>Get today's lesson.</li>
+        <li>Play, review, repeat.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="offer-title">
+      <div class="offer">
+        <span class="badge">Founding member offer</span>
+        <h2 id="offer-title">14 days free, then $4.99/month.</h2>
+        <p class="price">Cancel anytime.</p>
+        <div class="btn-row" style="justify-content:center">
+          <a class="btn btn-primary" href="#lead-form" data-cta="offer">Claim free trial</a>
+        </div>
+        <p class="note">Demo page. No real product or billing.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="form-title">
+      <div class="form-card">
+        <h2 id="form-title">Get your first lesson</h2>
+        <form id="lead-form" novalidate>
+          <div class="field">
+            <label for="lead-email">Email address</label>
+            <input id="lead-email" name="email" type="email" required autocomplete="email" inputmode="email" aria-describedby="form-msg">
+          </div>
+          <div class="field">
+            <label for="lead-level">Your level</label>
+            <select id="lead-level" name="level">
+              <option>Beginner</option>
+              <option>Casual</option>
+              <option>Club player</option>
+              <option>Advanced</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit">Send me lesson 1</button>
+          <p id="form-msg" class="form-msg" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <section aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <details>
+        <summary>Is it really free?</summary>
+        <p>Free for 14 days; this is a test page, so nothing is charged.</p>
+      </details>
+      <details>
+        <summary>Do I need to know chess?</summary>
+        <p>No. Beginners are welcome.</p>
+      </details>
+      <details>
+        <summary>Can I cancel?</summary>
+        <p>Anytime, in two taps.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 PocketRook (fictional brand for ad testing).</p>
+    <nav aria-label="Legal"><a href="#">Privacy</a><span class="sep" aria-hidden="true">&middot;</span><a href="#">Terms</a></nav>
+  </footer>
+</div>
+
+<aside class="console" id="ad-console" aria-label="Ad test console">
+  <div class="console-inner">
+    <button type="button" class="console-toggle" id="console-toggle" aria-expanded="false" aria-controls="console-body">
+      <span>Ad test console</span>
+      <span class="chip" id="iframe-chip" hidden>iframe</span>
+      <span class="count" id="event-count">0 events</span>
+      <span class="chev" aria-hidden="true">&#9650;</span>
+    </button>
+    <div class="console-body" id="console-body" tabindex="0" role="region" aria-label="Ad test console details" hidden>
+      <p class="iframe-note" id="iframe-note"></p>
+
+      <h2>Query parameters</h2>
+      <table aria-label="Query parameters">
+        <thead><tr><th scope="col">Key</th><th scope="col">Value</th></tr></thead>
+        <tbody id="params-body"></tbody>
+      </table>
+
+      <h2>Context</h2>
+      <table aria-label="Page context">
+        <tbody>
+          <tr><th scope="row">referrer</th><td id="ctx-referrer"></td></tr>
+          <tr><th scope="row">loaded at</th><td id="ctx-loaded"></td></tr>
+          <tr><th scope="row">viewport</th><td id="ctx-viewport"></td></tr>
+          <tr><th scope="row">session id</th><td id="ctx-session"></td></tr>
+        </tbody>
+      </table>
+
+      <h2>Event log</h2>
+      <div class="log" id="event-log" role="log" aria-label="Event log"></div>
+      <p class="log-empty" id="log-empty" hidden>(log is empty)</p>
+      <div class="actions">
+        <button type="button" class="cbtn" id="copy-log">Copy log as JSON</button>
+        <button type="button" class="cbtn" id="clear-log">Clear log</button>
+        <span class="status" id="log-status" role="status"></span>
+      </div>
+      <textarea class="fallback" id="log-fallback" readonly hidden aria-label="Log JSON, select and copy manually"></textarea>
+
+      <h2>Build a test URL</h2>
+      <div class="builder">
+        <div><label for="b-source">utm_source</label><input id="b-source" type="text" data-key="utm_source" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div><label for="b-medium">utm_medium</label><input id="b-medium" type="text" data-key="utm_medium" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div><label for="b-campaign">utm_campaign</label><input id="b-campaign" type="text" data-key="utm_campaign" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div><label for="b-content">utm_content</label><input id="b-content" type="text" data-key="utm_content" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+      </div>
+      <label for="url-out" style="margin-top:10px;font-size:.8rem">Test URL</label>
+      <input class="out" id="url-out" type="text" readonly style="margin-top:4px">
+      <div class="actions">
+        <button type="button" class="cbtn" id="copy-url">Copy URL</button>
+        <span class="status" id="url-status" role="status"></span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+  var DL = window.dataLayer = window.dataLayer || [];
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---- query params ---- */
+  var params = Object.create(null);
+  var sp = new URLSearchParams(location.search);
+  var paramEntries = [];
+  sp.forEach(function (v, k) {
+    paramEntries.push([k, v]);
+    if (k in params) {
+      if (!Array.isArray(params[k])) params[k] = [params[k]];
+      params[k].push(v);
+    } else {
+      params[k] = v;
+    }
+  });
+
+  /* ---- session id ---- */
+  function uuid() {
+    try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 3 | 8)).toString(16);
+    });
+  }
+  var sessionId = null;
+  try { sessionId = sessionStorage.getItem('pr_session_id'); } catch (e) {}
+  if (!sessionId) {
+    sessionId = uuid();
+    try { sessionStorage.setItem('pr_session_id', sessionId); } catch (e) {}
+  }
+
+  var loadedAt = new Date().toISOString();
+  var inIframe;
+  try { inIframe = window.self !== window.top; } catch (e) { inIframe = true; }
+
+  /* ---- event log ---- */
+  var eventLog = [];
+  var BASE_KEYS = { event: 1, ts: 1, session_id: 1, page_path: 1, params: 1 };
+  var logEl = $('event-log');
+  var emptyEl = $('log-empty');
+  var countEl = $('event-count');
+
+  function updateCount() {
+    var n = eventLog.length;
+    countEl.textContent = n + (n === 1 ? ' event' : ' events');
+    emptyEl.hidden = n !== 0;
+  }
+
+  function renderEntry(evt) {
+    var row = document.createElement('div');
+    row.className = 'log-row';
+    var t = document.createElement('time');
+    t.setAttribute('datetime', evt.ts);
+    t.textContent = new Date(evt.ts).toLocaleTimeString([], { hour12: false });
+    var n = document.createElement('span');
+    n.className = 'name';
+    n.textContent = evt.event;
+    row.appendChild(t);
+    row.appendChild(n);
+    var d = {};
+    var has = false;
+    Object.keys(evt).forEach(function (k) { if (!BASE_KEYS[k]) { d[k] = evt[k]; has = true; } });
+    if (has) {
+      var ds = document.createElement('span');
+      ds.className = 'details';
+      ds.textContent = JSON.stringify(d);
+      row.appendChild(ds);
+    }
+    logEl.insertBefore(row, logEl.firstChild);
+  }
+
+  function track(name, details) {
+    var evt = {
+      event: name,
+      ts: new Date().toISOString(),
+      session_id: sessionId,
+      page_path: location.pathname,
+      params: Object.assign({}, params)
+    };
+    if (details) Object.keys(details).forEach(function (k) { evt[k] = details[k]; });
+    try { DL.push(Object.assign({}, evt)); } catch (e) {}
+    eventLog.push(evt);
+    renderEntry(evt);
+    updateCount();
+  }
+
+  /* ---- console: params + context ---- */
+  var pb = $('params-body');
+  if (!paramEntries.length) {
+    var tr0 = document.createElement('tr');
+    var td0 = document.createElement('td');
+    td0.colSpan = 2;
+    td0.textContent = '(none)';
+    tr0.appendChild(td0);
+    pb.appendChild(tr0);
+  } else {
+    paramEntries.forEach(function (kv) {
+      var tr = document.createElement('tr');
+      var k = document.createElement('th');
+      k.scope = 'row';
+      if (kv[0].indexOf('utm_') === 0) {
+        var m = document.createElement('mark');
+        m.className = 'utm';
+        m.textContent = kv[0];
+        k.appendChild(m);
+      } else {
+        k.textContent = kv[0];
+      }
+      var v = document.createElement('td');
+      v.textContent = kv[1] === '' ? '(empty value)' : kv[1];
+      tr.appendChild(k);
+      tr.appendChild(v);
+      pb.appendChild(tr);
+    });
+  }
+
+  $('ctx-referrer').textContent = document.referrer || '(empty)';
+  $('ctx-loaded').textContent = loadedAt;
+  $('ctx-session').textContent = sessionId;
+  function updateViewport() { $('ctx-viewport').textContent = window.innerWidth + 'x' + window.innerHeight; }
+  updateViewport();
+
+  var note = $('iframe-note');
+  note.setAttribute('data-embedded', inIframe ? 'true' : 'false');
+  note.textContent = inIframe
+    ? 'Running inside an iframe: YES. Query params can be lost when a page is embedded.'
+    : 'Running inside an iframe: NO (top-level page).';
+  $('iframe-chip').hidden = !inIframe;
+
+  /* ---- console toggle + spacing ---- */
+  var consoleEl = $('ad-console');
+  var toggle = $('console-toggle');
+  var body = $('console-body');
+  function syncHeight() {
+    document.documentElement.style.setProperty('--console-h', consoleEl.offsetHeight + 'px');
+  }
+  toggle.addEventListener('click', function () {
+    var open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+    body.hidden = open;
+    syncHeight();
+  });
+  if (window.ResizeObserver) {
+    try { new ResizeObserver(syncHeight).observe(consoleEl); } catch (e) {}
+  }
+  window.addEventListener('resize', function () { updateViewport(); syncHeight(); });
+  syncHeight();
+
+  /* ---- copy helper ---- */
+  function setStatus(el, msg) {
+    el.textContent = msg;
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.textContent = ''; }, 3500);
+  }
+  function copyText(text, field, statusEl, btn) {
+    function fallback() {
+      var wasHidden = field.hidden;
+      var ok = false;
+      try {
+        field.hidden = false;
+        field.value = text;
+        field.focus();
+        field.select();
+        if (field.setSelectionRange) field.setSelectionRange(0, text.length);
+        ok = document.execCommand('copy');
+      } catch (e) { ok = false; }
+      if (ok) {
+        field.hidden = wasHidden;
+        try { btn.focus(); } catch (e) {}
+        setStatus(statusEl, 'Copied');
+      } else {
+        setStatus(statusEl, 'Select and copy manually');
+      }
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { setStatus(statusEl, 'Copied'); }, fallback);
+    } catch (e) {
+      fallback();
+    }
+  }
+
+  $('copy-log').addEventListener('click', function (e) {
+    copyText(JSON.stringify(eventLog, null, 2), $('log-fallback'), $('log-status'), e.currentTarget);
+  });
+  $('clear-log').addEventListener('click', function () {
+    eventLog.length = 0;
+    logEl.textContent = '';
+    updateCount();
+    setStatus($('log-status'), 'Log cleared');
+  });
+
+  /* ---- URL builder ---- */
+  var urlOut = $('url-out');
+  var builderInputs = document.querySelectorAll('.builder input');
+  function baseUrl() {
+    if (location.origin && location.origin !== 'null') return location.origin + location.pathname;
+    return location.href.split(/[?#]/)[0];
+  }
+  function buildUrl() {
+    var q = new URLSearchParams();
+    Array.prototype.forEach.call(builderInputs, function (inp) {
+      var v = inp.value.trim();
+      if (v) q.set(inp.getAttribute('data-key'), v);
+    });
+    var s = q.toString();
+    urlOut.value = baseUrl() + (s ? '?' + s : '');
+  }
+  Array.prototype.forEach.call(builderInputs, function (inp) { inp.addEventListener('input', buildUrl); });
+  buildUrl();
+  $('copy-url').addEventListener('click', function (e) {
+    copyText(urlOut.value, urlOut, $('url-status'), e.currentTarget);
+  });
+
+  /* ---- tracked events ---- */
+  track('page_view', { page_title: document.title, in_iframe: inIframe });
+
+  // scroll depth
+  var fired = { 25: false, 50: false, 75: false, 100: false };
+  var ticking = false;
+  function checkScroll() {
+    ticking = false;
+    var de = document.documentElement;
+    var max = de.scrollHeight - window.innerHeight;
+    var pct = max <= 0 ? 0 : (window.pageYOffset / max) * 100;
+    [25, 50, 75, 100].forEach(function (t) {
+      var need = t === 100 ? 99 : t;
+      if (!fired[t] && pct >= need) {
+        fired[t] = true;
+        track('scroll_' + t, { percent: t });
+      }
+    });
+  }
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    if (window.requestAnimationFrame) window.requestAnimationFrame(checkScroll);
+    else setTimeout(checkScroll, 100);
+  }, { passive: true });
+
+  // CTA clicks
+  document.addEventListener('click', function (e) {
+    var el = e.target && e.target.closest ? e.target.closest('[data-cta]') : null;
+    if (!el) return;
+    track('cta_click', {
+      cta: el.getAttribute('data-cta'),
+      text: (el.textContent || '').replace(/\s+/g, ' ').trim()
+    });
+  });
+
+  // form
+  var form = $('lead-form');
+  var email = $('lead-email');
+  var level = $('lead-level');
+  var msg = $('form-msg');
+  var formStarted = false;
+  function formStart() {
+    if (formStarted) return;
+    formStarted = true;
+    track('form_start');
+  }
+  form.addEventListener('focusin', formStart);
+  form.addEventListener('input', formStart);
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!email.value.trim() || !email.checkValidity()) {
+      email.setAttribute('aria-invalid', 'true');
+      msg.setAttribute('data-state', 'error');
+      msg.textContent = 'Please enter a valid email address.';
+      email.focus();
+      return;
+    }
+    email.removeAttribute('aria-invalid');
+    msg.setAttribute('data-state', 'ok');
+    track('form_submit', { level: level.value, simulated: true });
+    email.value = '';
+    msg.textContent = 'Thanks! (Simulated: nothing was sent.)';
+  });
+
+  // FAQ (toggle does not bubble, so capture)
+  document.addEventListener('toggle', function (e) {
+    var d = e.target;
+    if (d && d.tagName === 'DETAILS' && d.open) {
+      var s = d.querySelector('summary');
+      track('faq_open', { question: s ? s.textContent.replace(/\s+/g, ' ').trim() : '' });
+    }
+  }, true);
+
+  // time on page
+  setTimeout(function () { track('time_on_page_10s'); }, 10000);
+  setTimeout(function () { track('time_on_page_30s'); }, 30000);
+})();
+</script>
+</body>
+</html>
