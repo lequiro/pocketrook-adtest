@@ -488,6 +488,21 @@ window.dataLayer = window.dataLayer || [];
     updateCount();
   }
 
+  /* ---- ChatGPT Ads pixel: safe sender (no-op when the pixel is not loaded) ---- */
+  function sendAdEvent(adEvent, data) {
+    var id = uuid();
+    if (typeof window.oaiq === 'function') {
+      try {
+        window.oaiq('measure', adEvent, data, { event_id: id });
+        track('ad_event_sent', { ad_event: adEvent, event_id: id });
+      } catch (e) {
+        track('ad_event_error', { ad_event: adEvent, event_id: id });
+      }
+    } else {
+      track('ad_event_skipped', { ad_event: adEvent, reason: 'pixel_not_loaded' });
+    }
+  }
+
   /* ---- console: params + context ---- */
   var pb = $('params-body');
   if (!paramEntries.length) {
@@ -617,6 +632,7 @@ window.dataLayer = window.dataLayer || [];
 
   /* ---- tracked events ---- */
   track('page_view', { page_title: document.title, in_iframe: inIframe });
+  sendAdEvent('page_viewed', { type: 'contents' });
 
   // scroll depth
   var fired = { 25: false, 50: false, 75: false, 100: false };
@@ -676,6 +692,7 @@ window.dataLayer = window.dataLayer || [];
     email.removeAttribute('aria-invalid');
     msg.setAttribute('data-state', 'ok');
     track('form_submit', { level: level.value, simulated: true });
+    sendAdEvent('lead_created', { type: 'customer_action' });
     email.value = '';
     msg.textContent = 'Thanks! (Simulated: nothing was sent.)';
   });
